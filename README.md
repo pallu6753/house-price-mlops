@@ -1,508 +1,299 @@
-# House Price Prediction MLOps
+House Price Prediction MLOps
+An end-to-end machine learning and MLOps project that predicts
+real-estate unit prices using a trained regression model and exposes
+predictions through a FastAPI REST API. The project also includes
+tooling for experiment tracking, data/pipeline versioning, testing,
+containerization, CI/CD, and cloud deployment.
 
-An end-to-end Machine Learning Operations (MLOps) project for predicting house prices using machine learning, with API serving, Docker containerization, data version control, and automated CI/CD using GitHub Actions.
+Repository: https://github.com/pallu6753/house-price-mlops
+Project Overview
+This project demonstrates a reproducible workflow for developing and
+serving a house-price prediction model. The API accepts property-related
+features and returns a predicted price per unit area.
 
-## Table of Contents
+The prediction request uses the following features:
+- transaction_date
+- house_age
+- distance_to_nearest_mrt
+- convenience_stores
+- latitude
+- longitude
+The currently tested API response identifies the model as
+random_forest and reports the prediction unit as 10,000 New Taiwan
+Dollar per Ping. Predictions are estimates from the trained model and
+should not be treated as professional property valuations.
+Student / Author
+Pallavi R
+USN: 1TJ23DS019
+B.E. -- Computer Science and Engineering (Data Science)
+T. John Institute of Technology, Bengaluru
+- GitHub: https://github.com/pallu6753
+- Project repository: https://github.com/pallu6753/house-price-mlops
+Key Features
+- House-price prediction using a trained machine-learning regression
+  model.
+- FastAPI REST API with interactive Swagger documentation.
+- Single-record and batch prediction routes, where implemented.
+- Model metadata and health-check endpoints.
+- MLflow experiment tracking, when configured.
+- DVC data and pipeline versioning, when configured.
+- Automated tests using Pytest.
+- Docker containerization and Docker Compose configuration.
+- GitHub Actions workflow for CI checks.
+- Cloud deployment on Render.
+The availability of an individual MLOps feature depends on its
+configuration in the repository. Use the commands and status reported
+by the actual project rather than assuming that every optional service
+is active.
 
-- [Project Overview](#project-overview)
-- [Objectives](#objectives)
-- [Key Features](#key-features)
-- [System Architecture](#system-architecture)
-- [Technology Stack](#technology-stack)
-- [Project Structure](#project-structure)
-- [Prerequisites](#prerequisites)
-- [Installation and Setup](#installation-and-setup)
-- [Training the Model](#training-the-model)
-- [Running the API](#running-the-api)
-- [API Endpoints](#api-endpoints)
-- [Docker Setup](#docker-setup)
-- [DVC Setup](#dvc-setup)
-- [CI/CD Pipeline](#cicd-pipeline)
-- [Testing](#testing)
-- [Environment Variables](#environment-variables)
-- [Troubleshooting](#troubleshooting)
-- [Future Improvements](#future-improvements)
-- [Author](#author)
+Technology Stack
+  Technology                          Purpose
+  Python                              Main programming language
 
-## Project Overview
+  Pandas / NumPy                      Data processing and numerical
+operations
 
-House Price Prediction MLOps demonstrates how a machine learning application can be developed, packaged, tested, and prepared for deployment using modern MLOps practices.
+  Scikit-learn                        Machine-learning model training and
+evaluation
 
-The system uses housing-related features to estimate property prices. A trained machine learning model can be exposed through a REST API, allowing users or other applications to submit property information and receive a predicted price.
+  FastAPI                             REST API
 
-The project brings together machine learning development and software engineering practices to improve reproducibility, maintainability, and deployment consistency.
+  Uvicorn                             ASGI application server
 
-**Note:** Actual prediction performance depends on the dataset, feature selection, model configuration, and evaluation results.
+  MLflow                              Experiment tracking and
+model-related metadata
 
-## Objectives
+  DVC                                 Dataset and pipeline versioning
 
-- Develop a machine learning model for house price prediction.
-- Organize training and application code into maintainable modules.
-- Provide predictions through a REST API.
-- Package the application using Docker.
-- Use DVC for data and model-pipeline versioning where configured.
-- Automate build and validation steps using GitHub Actions.
-- Establish a reproducible workflow for future model improvements.
+  Pytest                              Automated testing
 
-## Key Features
+  Docker / Docker Compose             Containerization and local service
+orchestration
 
-- **Machine Learning:** Predicts house prices from supported property features.
-- **REST API:** Makes model predictions available through HTTP requests.
-- **Docker:** Packages the application and its dependencies into a container.
-- **DVC:** Supports reproducible data and pipeline management when configured.
-- **GitHub Actions:** Automates workflow execution on repository events.
-- **Modular Structure:** Separates application code from model-training code.
-- **Scalable Foundation:** Can be extended with monitoring, model tracking, and cloud deployment.
+  Git / GitHub                        Source-code version control
 
-## System Architecture
+  GitHub Actions                      CI automation
+Render                              Cloud hosting
+Model Features and Prediction Unit
+The API input schema uses these six fields:
 
-```text
-Housing Dataset
-      |
-      v
-Data Preprocessing
-      |
-      v
-Feature Engineering
-      |
-      v
-Model Training and Evaluation
-      |
-      v
-Trained Model Artifact
-      |
-      v
-FastAPI Prediction Service
-      |
-      v
-Docker Container
-      |
-      v
-Deployment Environment
-```
+  Field                       Description
+  transaction_date          Transaction date value used by the dataset
+house_age                 Age of the house
+distance_to_nearest_mrt   Distance to the nearest MRT station
+convenience_stores        Number of nearby convenience stores
+latitude                  Property latitude
+longitude                 Property longitude
 
-GitHub Actions can automate relevant checks and Docker image builds whenever changes are pushed to the repository.
-
-## Technology Stack
-
-| Technology | Purpose |
-|---|---|
-| Python | Main programming language |
-| Pandas | Data processing |
-| NumPy | Numerical operations |
-| Scikit-learn | Machine learning and preprocessing |
-| FastAPI | REST API development |
-| Uvicorn | ASGI server |
-| Docker | Application containerization |
-| DVC | Dataset and pipeline versioning |
-| Git | Version control |
-| GitHub | Source code hosting |
-| GitHub Actions | CI/CD workflow automation |
-| Pytest | Automated testing, if configured |
-
-The actual dependencies should match the packages and tools implemented in the repository.
-
-## Project Structure
-
-The following is a suggested structure. Adjust it to match the files that actually exist in your repository.
-
-```text
+The prediction is returned as predicted_price_per_unit_area. The unit
+reported by the API is 10,000 New Taiwan Dollar per Ping.
+Project Structure
+The following is a high-level guide. The actual files in the repository
+are authoritative; optional folders or files may differ by version.
 house-price-mlops/
 ├── .github/
 │   └── workflows/
-│       └── docker-image.yml
 ├── app/
-│   ├── __init__.py
-│   └── main.py
+│   ├── main.py
+│   ├── schemas.py
+│   └── services/
 ├── src/
 │   ├── train.py
-│   └── ...
-├── data/
-│   └── ...
-├── models/
-│   └── ...
+│   ├── preprocess.py
+│   └── evaluate.py
 ├── tests/
-│   └── ...
-├── .gitignore
-├── Dockerfile
-├── dvc.yaml
+├── docs/
 ├── requirements.txt
+├── requirements-runtime.txt
+├── params.yaml
+├── dvc.yaml
+├── Dockerfile
+├── docker-compose.yml
 └── README.md
-```
-
-- `app/`: API application and prediction endpoints.
-- `src/`: Training, preprocessing, and supporting scripts.
-- `data/`: Dataset files, if stored locally.
-- `models/`: Saved model artifacts, if stored locally.
-- `.github/workflows/`: GitHub Actions workflow definitions.
-- `Dockerfile`: Instructions for building the container image.
-- `dvc.yaml`: DVC pipeline stages, when configured.
-- `requirements.txt`: Python dependencies.
-- `README.md`: Project documentation.
-
-Large datasets and model artifacts should be managed according to the repository's storage strategy rather than committed indiscriminately.
-
-## Prerequisites
-
-Install the following tools before running the project:
-
-1. Python 3.10 or later, compatible with the selected dependencies.
-2. Git.
-3. Docker Desktop or Docker Engine.
-4. A GitHub account.
-5. DVC, if using DVC-based data or pipeline versioning.
-
-Verify your installations:
-
-```bash
+Prerequisites
+Install the tools required for the workflow you intend to run:
+- Python 3.10 or later, subject to dependency compatibility.
+- Git.
+- Docker Desktop or Docker Engine (for container workflows).
+- DVC (for DVC workflows).
+Check installations:
 python --version
 git --version
 docker --version
 dvc --version
-```
-
-The DVC command is required only if DVC is installed.
-
-## Installation and Setup
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/pavan-r1/house-price-mlops.git
+Installation
+1. Clone the repository
+git clone https://github.com/pallu6753/house-price-mlops.git
 cd house-price-mlops
-```
-
-### 2. Create a virtual environment
-
-**Windows PowerShell:**
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-```
-
-If PowerShell blocks environment activation, use the appropriate execution-policy configuration for your system or invoke the environment's Python executable directly.
-
-### 3. Install dependencies
-
-```bash
+2. Create and activate a virtual environment
+Windows PowerShell:
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+macOS / Linux:
+python -m venv venv
+source venv/bin/activate
+3. Install dependencies
 python -m pip install --upgrade pip
 pip install -r requirements.txt
-```
-
-### 4. Configure the dataset and model
-
-Place the dataset in the location expected by the training code. Confirm that the configured input columns, target column, and file paths match the actual dataset.
-
-If the project requires a pre-trained model, ensure that the expected model artifact is available before starting the API.
-
-## Training the Model
-
-If the repository contains `src/train.py`, run:
-
-```bash
+If you only need the runtime API dependencies and the repository's
+runtime requirements file is present, you can install:
+pip install -r requirements-runtime.txt
+Train the Model
+From the repository root, run:
 python src/train.py
-```
+The training script is responsible for loading and preparing the
+dataset, training the configured regression model, evaluating it, and
+saving the model artifact. Check the script's output and configured
+artifact path to confirm where the trained model is stored.
 
-The training process should perform the steps implemented by the project, such as:
-
-1. Loading the dataset.
-2. Validating the input data.
-3. Preprocessing the features.
-4. Splitting the data into training and validation sets.
-5. Training the selected regression model.
-6. Evaluating model performance.
-7. Saving the trained model and preprocessing artifacts.
-
-Typical regression metrics include:
-
-- **MAE:** Mean Absolute Error.
-- **MSE:** Mean Squared Error.
-- **RMSE:** Root Mean Squared Error.
-- **R²:** Coefficient of determination.
-
-Use the metrics actually calculated by your implementation. Do not assume model accuracy or performance values before running the evaluation.
-
-## Running the API
-
-If your FastAPI entry point is `app/main.py` and the FastAPI application object is named `app`, start the server with:
-
-```bash
+Common regression evaluation metrics include:
+- MAE --- Mean Absolute Error
+- MSE --- Mean Squared Error
+- RMSE --- Root Mean Squared Error
+- R² --- Coefficient of determination
+Record actual values produced by your training run. Do not insert
+assumed performance numbers into project documentation.
+Run the API Locally
+Start the FastAPI server from the repository root:
 uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
-```
-
-Open the interactive API documentation:
-
+Open the API documentation:
 - Swagger UI: http://127.0.0.1:8000/docs
 - ReDoc: http://127.0.0.1:8000/redoc
+The API entry point shown above matches the local command used for this
+project. If the application module is changed, update the command
+accordingly.
+API Endpoints
+The project API includes the following routes:
 
-These URLs work when the API is running locally and the application exposes the corresponding documentation routes.
+  Method   Endpoint           Purpose
+  GET    /                API information
+GET    /health          Health check
+GET    /model-info      Model information
+POST   /predict         Predict one property price
+POST   /predict/batch   Predict for multiple records
 
-**Important:** Update the Uvicorn module path if your actual API entry point or application variable has a different name.
-
-## API Endpoints
-
-The following endpoints are examples of a typical FastAPI prediction service. They are not guaranteed to exist until implemented in the application.
-
-| Method | Example endpoint | Purpose |
-|---|---|---|
-| GET | `/` | Application information or health response |
-| GET | `/health` | Health check |
-| POST | `/predict` | Predict a house price |
-
-### Example prediction request
-
-The request fields must match the input schema defined in the API.
-
-```json
+Swagger UI is available at /docs while the API is running.
+Example request: POST /predict
 {
-  "area": 1500,
-  "bedrooms": 3,
-  "bathrooms": 2
+  "transaction_date": 2013.5,
+  "house_age": 15.2,
+  "distance_to_nearest_mrt": 850.5,
+  "convenience_stores": 5,
+  "latitude": 24.982,
+  "longitude": 121.543
 }
-```
-
-The above JSON is illustrative only. Replace the fields with the actual features supported by the trained model.
-
-### Example prediction response
-
-```json
+Use values appropriate to the dataset and the model's expected input
+ranges. The example is illustrative; it is not a guarantee of a
+particular prediction.
+Example response
 {
-  "predicted_price": 7500000
+  "predicted_price_per_unit_area": 37.12484933862435,
+  "unit": "10,000 New Taiwan Dollar per Ping",
+  "model_name": "random_forest",
+  "model_version": "1.0.0"
 }
-```
-
-This response is illustrative, not a verified output from the project. The predicted price and its units depend on the trained model and dataset.
-
-## Docker Setup
-
-Docker allows the application to run in a consistent environment without requiring all Python dependencies to be installed directly on the host machine.
-
-### 1. Build the image
-
-From the directory containing the Dockerfile:
-
-```bash
-docker build -t house-price-api:latest .
-```
-
-### 2. Run the container
-
-```bash
-docker run --rm -p 8000:8000 house-price-api:latest
-```
-
-### 3. Test the API
-
+This is an example of a successful response observed during local API
+testing. A prediction can vary with the input values and the loaded
+model artifact.
+Docker
+Build the image:
+docker build -t house-price-mlops-api .
+Run the container:
+docker run --rm -p 8000:8000 house-price-mlops-api
 Open:
 
 http://localhost:8000/docs
 
-### 4. Inspect running containers
-
-```bash
-docker ps
-```
-
-### 5. Stop a running container
-
-If you started the container in detached mode, find its name or ID and run:
-
-```bash
-docker stop <container_name_or_id>
-```
-
-The Docker image build depends on a valid, non-empty Dockerfile, a correct API entry point, and the required application files.
-
-## DVC Setup
-
-DVC (Data Version Control) helps track datasets and machine learning pipeline stages without requiring large data files to be committed directly to Git.
-
-### 1. Initialize DVC
-
-If DVC has not already been initialized:
-
-```bash
-dvc init
-```
-
-Do not run initialization again in an already initialized repository unless you understand the effect on its existing configuration.
-
-### 2. Track a dataset
-
-For example, if the dataset is stored at `data/housing.csv`:
-
-```bash
-dvc add data/housing.csv
-```
-
-This generates a `.dvc` metadata file and updates `.gitignore` to exclude the tracked data file from ordinary Git commits.
-
-### 3. Configure a remote
-
-A DVC remote must be configured before pushing data to remote storage. For example, a local directory can be used for basic testing:
-
-```bash
-dvc remote add -d localstorage ../dvc-storage
-```
-
-This local remote is suitable only for testing on the same machine or an appropriately shared filesystem. For team collaboration, configure an accessible shared storage provider.
-
-### 4. Save DVC metadata
-
-```bash
-git add data/housing.csv.dvc .gitignore .dvc/config
-git commit -m "Track housing dataset with DVC"
-```
-
-If the paths differ in your repository, stage the files that actually exist.
-
-### 5. Run the pipeline
-
-If `dvc.yaml` contains valid stages:
-
-```bash
+If the repository's Docker Compose configuration is ready to use, start
+its services with:
+docker compose up --build
+Stop the Compose services with:
+docker compose down
+DVC
+If DVC is configured in the repository, reproduce the pipeline with:
 dvc repro
-```
+To inspect DVC-tracked files and pipeline status:
+dvc status
+A DVC remote must be configured and accessible before pushing or pulling
+remote data. Follow the existing .dvc/config and repository setup; do
+not initialize DVC again if it is already initialized.
+MLflow
+If MLflow tracking is configured, start the tracking UI using the
+tracking configuration for the project. A common local command is:
+mlflow ui
+Then open:
 
-A DVC pipeline must define its commands, dependencies, outputs, and any required parameters. An empty `dvc.yaml` does not define a runnable pipeline.
+http://127.0.0.1:5000
 
-## CI/CD Pipeline
-
-GitHub Actions automates selected tasks when code is pushed or a pull request is opened.
-
-A typical pipeline can include:
-
-1. Checking out the source code.
-2. Setting up Python or Docker Buildx.
-3. Installing dependencies or preparing the Docker build.
-4. Running automated tests, if configured.
-5. Building the Docker image.
-6. Pushing the image to a container registry, if registry authentication and push configuration are set up.
-
-The workflow is defined in `.github/workflows/`.
-
-### Verify a workflow run
-
-1. Open the GitHub repository.
-2. Select the **Actions** tab.
-3. Open the latest workflow run.
-4. Review the individual job logs.
-5. Fix any failed step and push a new commit.
-
-A successful Docker image build does not automatically mean that the image was pushed to a registry or that the application was deployed. Those actions require additional workflow configuration.
-
-## Testing
-
-Run the tests that are implemented in the project.
-
-If the repository uses Pytest and contains a test suite:
-
-```bash
+The tracking UI will show runs only when the training code logs
+experiments to the configured tracking store.
+Testing
+Run the test suite from the repository root:
 pytest -v
-```
+A successful test run should complete without failures. Include only
+test results that have actually been executed.
+CI/CD
+The GitHub Actions workflows are stored in:
+.github/workflows/
+To inspect a workflow run:
+1. Open the repository on GitHub.
+2. Select Actions.
+3. Open the latest workflow run.
+4. Review each job and its logs.
+5. Fix any failed step before treating the workflow as successful.
+A successful build or test workflow does not by itself prove that a
+Docker image was published or that a deployment completed. Those steps
+require their own configuration and successful run.
+Deploy on Render
+The FastAPI service can be hosted on Render as a Web Service.
 
-Useful validation checks include:
+Typical settings for this repository:
 
-- Dataset loading and validation.
-- Feature preprocessing.
-- Model training and artifact saving.
-- Prediction output format.
-- API input validation and error handling.
-- Docker image build.
-- API startup and health checks.
-
-Only report tests as passed after executing them successfully.
-
-## Environment Variables
-
-Store credentials and environment-specific configuration in environment variables instead of hardcoding secrets in source code.
-
-For local development, you may use a `.env` file if the application is configured to load it. Add `.env` to `.gitignore` and provide a sanitized `.env.example` when required.
-
-Example placeholder:
-
-```env
-MODEL_PATH=models/house_price_model.pkl
-```
-
-This variable is only useful if the application reads `MODEL_PATH`. Adjust the variable name and model path to match the actual code.
-
-Never commit API keys, passwords, access tokens, or production credentials to GitHub.
-
-## Troubleshooting
-
-### Docker error: `The Dockerfile cannot be empty`
-
-**Cause:** Docker cannot build an image from an empty Dockerfile.
-
-**Solution:** Add valid Docker instructions, save the file, and rerun:
-
-```bash
-docker build -t house-price-api:latest .
-```
-
-### Error: `ModuleNotFoundError`
-
-**Cause:** A required Python package may be missing from the environment.
-
-**Solution:**
-
-```bash
+Build command
 pip install -r requirements.txt
-```
+Start command
+uvicorn app.main:app --host 0.0.0.0 --port $PORT
+Set environment variables only when the application requires them.
+Render provides the PORT value automatically; do not hard-code it.
+Confirm that the trained model artifact is included in the repository or
+generated during the deployment build.
 
-If the error persists, add the missing dependency to `requirements.txt` with a compatible version.
-
-### Error: `Could not import module`
-
-**Cause:** The Uvicorn module path may not match the actual Python file or FastAPI object name.
-
-**Solution:** Check the location of the entry-point file and use the correct module path.
-
-### API cannot load the model
-
-**Cause:** The model artifact may not exist at the configured path or may not have been included in the container.
-
-**Solution:** Train the model, configure the correct artifact path, and ensure that the required file is available during the Docker build or runtime.
-
-### GitHub Actions Docker build succeeds but no image is available
-
-**Cause:** The workflow may build the image without pushing it to a registry.
-
-**Solution:** Configure image tagging, registry authentication, and a push-enabled build step if a published image is required.
-
-### DVC cannot reproduce the pipeline
-
-**Cause:** The DVC pipeline may be missing stages, dependencies, outputs, or required input data.
-
-**Solution:** Verify `dvc.yaml`, the dataset paths, and the commands used by each stage.
-
-## Future Improvements
-
-- Add systematic data validation and preprocessing checks.
-- Compare multiple regression algorithms.
-- Track experiments and metrics using MLflow.
-- Add unit tests and API integration tests.
-- Configure DVC remote storage for team collaboration.
-- Publish versioned Docker images to a container registry.
-- Deploy the API to a cloud hosting platform.
-- Add prediction logging, monitoring, and data-drift detection.
-- Introduce automated model retraining and validation.
-
-## Author
-
-**Pavan R.**
-
-B.E. in Data Science  
-T. John Institute of Technology, Bengaluru
-
-GitHub: https://github.com/pavan-r1
-
-## License
-
-Choose and add an appropriate open-source license if you intend to distribute this project publicly. Until a license is added, do not assume that others have permission to reuse or redistribute the code.
-
----
-
-*This project is intended for educational and demonstration purposes. Predicted property values are estimates produced by the trained model and should not be treated as professional property valuations.*
+After deployment, test the Render service's /, /health,
+/model-info, and /docs routes. Add the exact public Render URL here
+once confirmed:
+Live API: <add-your-render-service-url>
+Swagger UI: <add-your-render-service-url>/docs
+Troubleshooting
+ModuleNotFoundError
+Install the dependencies in the active virtual environment:
+pip install -r requirements.txt
+Uvicorn cannot import the application
+Run the command from the repository root and verify that app/main.py
+exists and exposes a FastAPI object named app:
+uvicorn app.main:app --reload
+Model artifact not found
+Confirm that training has completed and that the saved model path
+matches the path expected by the API. Ensure the artifact is available
+in the Render build/runtime environment.
+DVC pipeline cannot run
+Check that dvc.yaml contains valid stages and that required data
+files, dependencies, parameters, and outputs are available.
+Render deployment fails
+Review the Render build and runtime logs. Verify the build command,
+start command, Python dependency compatibility, and availability of the
+trained model artifact.
+Future Improvements
+- Add stronger data validation and input-range checks.
+- Compare multiple regression algorithms using the same evaluation
+  split.
+- Improve experiment tracking and model version management.
+- Add API integration tests and deployment health checks.
+- Configure shared DVC remote storage.
+- Add prediction monitoring and data-drift detection.
+- Automate model retraining and validation.
+License
+Add an appropriate open-source license before granting public reuse or
+redistribution rights. Without a license, do not assume that others have
+permission to reuse the project.
+Educational project. Predicted prices are model estimates and are not
+professional property valuations.
